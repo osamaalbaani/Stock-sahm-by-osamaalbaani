@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة الربح بعد رسوم على سعر البيع</title>
+<style>
+body {font-family: Arial, sans-serif; background:#0f172a; color:#e6eef6; padding:20px;}
+.container{max-width:700px;margin:auto;background:rgba(255,255,255,0.02);padding:20px;border-radius:12px;}
+h1{text-align:center;}
+label{display:block;margin-top:12px;color:#94a3b8;}
+input{width:100%;padding:10px;margin-top:4px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);color:#e6eef6;}
+button{margin-top:16px;width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(90deg,#06b6d4,#7c3aed);color:#021124;font-weight:bold;cursor:pointer;}
+.result{margin-top:20px;background:rgba(255,255,255,0.02);padding:16px;border-radius:10px;}
+.profit{color:#16a34a;}
+.loss{color:#ef4444;}
+ul{padding-left:20px;}
+.footer{text-align:center;margin-top:20px;color:#94a3b8;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>حاسبة الربح بعد رسوم على سعر البيع</h1>
+
+<label>المبلغ المستثمر (ريال)</label>
+<input type="number" id="capital" value="10000" step="0.01">
+
+<label>سعر شراء السهم (ريال)</label>
+<input type="number" id="buyPrice" value="10" step="0.01">
+
+<label>السعر الحالي للسهم (ريال)</label>
+<input type="number" id="currentPrice" value="10.50" step="0.01">
+
+<button onclick="calculateProfit()">احسب الربح بعد الرسوم</button>
+
+<div class="result" id="result">
+<p>النتائج ستظهر هنا...</p>
+</div>
+
+<div class="footer">
+<p>صنع من قبل Osama Albaani</p>
+</div>
+</div>
+
+<script>
+function calculateProfit(){
+  const capital = parseFloat(document.getElementById('capital').value);
+  const buyPrice = parseFloat(document.getElementById('buyPrice').value);
+  const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+
+  if(!capital || !buyPrice || !currentPrice){
+    alert('ادخل جميع البيانات!');
+    return;
+  }
+
+  // حساب عدد الأسهم من رأس المال
+  const shares = capital / buyPrice;
+
+  // إجمالي البيع
+  const totalSell = shares * currentPrice;
+
+  // الربح قبل الرسوم
+  const profitBeforeFees = totalSell - capital;
+
+  // رسوم المعاملة تُحسب على إجمالي البيع
+  const feeCapital = totalSell * 0.105 / 100; // عمولة كابيتال
+  const feeAuthority = totalSell * 0.03 / 100; // رسوم هيئة السوق المالية
+  const feeTadawul = totalSell * 0.009 / 100; // رسوم مجموعة تداول
+  const feeSettlement = totalSell * 0.005 / 100; // رسوم التسوية
+  const feeCustody = totalSell * 0.001 / 100; // رسوم الحفظ
+  const feeClearing = totalSell * 0.005 / 100; // رسوم المقاصة
+
+  const totalFees = feeCapital + feeAuthority + feeTadawul + feeSettlement + feeCustody + feeClearing;
+
+  const profitAfterFees = profitBeforeFees - totalFees;
+  const profitPercent = (profitAfterFees / capital) * 100;
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = `
+    <p>عدد الأسهم المشتراة: ${shares.toFixed(4)}</p>
+    <p>الربح قبل الرسوم: <span class="${profitBeforeFees>=0?'profit':'loss'}">${profitBeforeFees.toFixed(2)} ر.س</span></p>
+    <p>إجمالي الرسوم على البيع: ${totalFees.toFixed(2)} ر.س</p>
+    <ul>
+      <li>عمولة كابيتال: ${feeCapital.toFixed(2)} ر.س</li>
+      <li>رسوم هيئة السوق المالية: ${feeAuthority.toFixed(2)} ر.س</li>
+      <li>رسوم مجموعة تداول: ${feeTadawul.toFixed(2)} ر.س</li>
+      <li>رسوم التسوية: ${feeSettlement.toFixed(2)} ر.س</li>
+      <li>رسوم الحفظ: ${feeCustody.toFixed(2)} ر.س</li>
+      <li>رسوم المقاصة: ${feeClearing.toFixed(2)} ر.س</li>
+    </ul>
+    <p>الربح بعد كل الرسوم: <span class="${profitAfterFees>=0?'profit':'loss'}">${profitAfterFees.toFixed(2)} ر.س</span></p>
+    <p>نسبة الربح بعد كل الرسوم: <span class="${profitPercent>=0?'profit':'loss'}">${profitPercent.toFixed(2)}%</span></p>
+  `;
+}
+</script>
+</body>
+</html>
